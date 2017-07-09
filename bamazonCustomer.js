@@ -18,19 +18,24 @@ connection.connect(function (err) {
   displayStore();
 });
 
+
 function displayStore(){
+    console.log("\n\n");
     connection.query("SELECT * FROM products", function (err, res) {
       if (err) throw err;
+      console.log("Welcome to Our Store!");
       for(var i = 0; i < res.length; i++){
-            console.log ("Product ID: " + res[i].position + " | Product Name: " + res[i].product_name + " | Product Price: $" + res[i].price + " | Stock Quantity: " + res[i].stock_quantity);
+            console.log("------------------------------------------------------------------------------------------------------");
+            console.log ("Product ID: " + res[i].position + "  | Product Name: " + res[i].product_name + "  | Product Price: $" + res[i].price + "  | Stock Quantity: " + res[i].stock_quantity);
         }
-        console.log("--------------------------------------------------------");
+        console.log("------------------------------------------------------------------------------------------------------");
 
         purchase();
     });
 }
 
 function purchase(){
+    console.log("\n");
       inquirer
         .prompt([
             {
@@ -44,10 +49,51 @@ function purchase(){
                 message: "How many units of the product would you like to purchase?"
             }
         ]).then(function(answer){
-            showTotal();
+            let id = answer.id;
+            let quantity = answer.quantity;
+            validateQuantity(id, quantity);
         });
 }
 
-function showTotal(){
-    console.log("Your total is null")
+function validateQuantity(id, quantity){
+    let query = "SELECT stock_quantity FROM products WHERE ?";
+    connection.query(query, {position: id}, function (err, res) {
+        if (err) throw err;
+        var stock = res[0].stock_quantity;
+        console.log("\n")
+        if (stock > quantity){
+            console.log("We have verified this items availability.");
+            buyProduct(id, quantity);
+        } else {
+            console.log("Sorry there is not enough of that product in inventory.");
+            displayStore();
+        }
+    });
+}
+
+function buyProduct(id, quantity){
+    let query = `UPDATE products SET stock_quantity = stock_quantity - ${quantity} WHERE position = ${id}`;
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+    });
+
+    let query2 = `SELECT * FROM products WHERE position = ${id}`;
+    connection.query(query2, function(err, res) {
+        if (err) throw err;
+        let item = res[0].product_name;
+        console.log(`You have bought ${quantity} ${item}'s!`);
+        showTotal(id, quantity);
+    });
+}
+
+
+function showTotal(id, quantity){
+    let query = `SELECT price FROM products WHERE position = ${id}`;
+    connection.query(query, function(err, res){
+        if (err) throw err;
+        let price = res[0].price;
+        let total = price * quantity;
+        console.log(`Your Total is $${total}`);
+        displayStore();
+    });
 }
