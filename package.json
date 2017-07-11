@@ -1,0 +1,24 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Please run the schema.sql to set up the database and then you can populate the table by importing from the productfile.csv",
+  "main": "bamazonCustomer.js",
+  "dependencies": {
+    "inquirer": "^3.1.1",
+    "mysql": "^2.13.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lolobrew/bamazon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lolobrew/bamazon/issues"
+  },
+  "homepage": "https://github.com/Lolobrew/bamazon#readme"
+}
